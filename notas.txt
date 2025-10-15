@@ -1,0 +1,5 @@
+para ler o código de barras, usa-se o numericId do User
+    De acordo com o api.admin.credentials.pdf
+
+No barcodeModal (pasta components do admin.presence_control), o leitor manda o numericId para um input que está com margin left -9999px.
+    Tirando ele de lá e copiando e colando alguns numericIds, dá para testar
