@@ -117,6 +117,8 @@ const Delegation = () => {
   const [overlayState, selectedParticipantId, handleParticipantChange] = useParticipantModal()
   const [handlePostponePayment, postponePaymentState] = usePostponePayment()
   const [hasDelegates, participantLength, sentDocuments, paidParticipants, totalPaid] = viewDelegationData(delegation)
+  const [selectedDate, setSelectedDate] = React.useState('')
+
 
   return (
     <div className='admin-container'>
@@ -270,12 +272,32 @@ const Delegation = () => {
         <Button
           className="secondary-button-box green-light"
           isDisabled={!delegation}
-          onPress={() => handlePostponePayment(delegation.id)}
+          
         >
-          {postponePaymentState !== 'idle' && <Spinner dim="18px" color='green' />}
           Adiar Pagamento
         </Button>
+
+       <div className="flex items-center gap-2">
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="border rounded-lg px-3 py-2 text-lg w-56"
+          />
+        </div>
+
+        <Button
+          className="secondary-button-box green-light"
+          isDisabled={!delegation || !selectedDate}
+          onPress={() => handlePostponePayment(delegation.id, selectedDate)}
+    
+        >
+          {postponePaymentState !== 'idle' && <Spinner dim="18px" color="green" />}
+          Confirmar
+        </Button>
+        
       </div>
+      
 
       <div className='committee-title'>
         <div className='text'>
@@ -333,12 +355,12 @@ const Delegation = () => {
   )
 }
 
-function usePostponePayment(): [(delegationId: string) => void, "idle" | "loading" | "submitting"] {
+function usePostponePayment(): [(delegationId: string, newDate: string) => void, "idle" | "loading" | "submitting"] {
   const fetcher = useFetcher()
 
-  const handlePostponePayment = (delegationId: string) => {
+  const handlePostponePayment = (delegationId: string,  newDate: string) => {
     fetcher.submit(
-      { delegationId },
+      { delegationId,  newDate},
       { method: "post", action: "/api/admin/delegation/paymentDue", navigate: false }
     )
   }
