@@ -6,15 +6,26 @@ import { prisma } from '~/db.server';
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireAdminId(request)
-
+  
+  // Salvando os inputs nas variaveis 
   const formData = await request.formData()
   const delegationId = formData.get("delegationId")
+  const newDate = formData.get("newDate")
   let delegation
 
+
+  // Validação
+  if (typeof delegationId !== "string" || delegationId.trim() === "") {
+    return json({ error: "Delegation ID é obrigatório" }, { status: 400 })
+  }
+
+  if (typeof newDate !== "string" || newDate.trim() === "") {
+    return json({ error: "Nova data (newDate) é obrigatória" }, { status: 400 })
+  }
+
   try {
-    if (typeof delegationId === "string" && delegationId !== "") {
-      delegation = await postponeDelegationPaymentDue(delegationId)
-    }
+    delegation = await postponeDelegationPaymentDue(delegationId)
+    
   } catch (error) {
     console.log(error)
     return json(
