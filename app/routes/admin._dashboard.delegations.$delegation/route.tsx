@@ -118,6 +118,8 @@ const Delegation = () => {
   const [handlePostponePayment, postponePaymentState] = usePostponePayment()
   const [hasDelegates, participantLength, sentDocuments, paidParticipants, totalPaid] = viewDelegationData(delegation)
   const [selectedDate, setSelectedDate] = React.useState('')
+  const [showPostponeForm, setShowPostponeForm] = React.useState(false)
+
 
 
   return (
@@ -272,29 +274,35 @@ const Delegation = () => {
         <Button
           className="secondary-button-box green-light"
           isDisabled={!delegation}
+          onPress={() => setShowPostponeForm(true)}
           
         >
           Adiar Pagamento
         </Button>
 
-       <div className="flex items-center gap-2">
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-lg w-56"
-          />
-        </div>
+       
+        {showPostponeForm && (
+            <>
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="border rounded-lg px-3 py-2 text-lg w-56"
+                />
+              </div>
 
-        <Button
-          className="secondary-button-box green-light"
-          isDisabled={!delegation || !selectedDate}
-          onPress={() => handlePostponePayment(delegation.id, selectedDate)}
-    
-        >
-          {postponePaymentState !== 'idle' && <Spinner dim="18px" color="green" />}
-          Confirmar
-        </Button>
+              <Button
+                className="secondary-button-box green-light"
+                isDisabled={!delegation || !selectedDate}
+                onPress={() => handlePostponePayment(delegation.id, selectedDate)}
+              >
+                {postponePaymentState !== 'idle' && <Spinner dim="18px" color="green" />}
+                Confirmar
+              </Button>
+            </>
+        )}
+
         
       </div>
       
