@@ -23,8 +23,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     return json({ error: "Nova data (newDate) é obrigatória" }, { status: 400 })
   }
 
+
+
   try {
-    delegation = await postponeDelegationPaymentDue(delegationId)
+    delegation = await postponeDelegationPaymentDue(delegationId, newDate)
     
   } catch (error) {
     console.log(error)
@@ -37,18 +39,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return json({ delegation })
 }
 
-async function postponeDelegationPaymentDue(id: string) {
-  let currentDate = new Date();
-  let dayOfWeek = currentDate.getDay();
-  let daysToAdd = (dayOfWeek >= 2 && dayOfWeek <= 5) ? 7 : 5;
-  let newDate = new Date(currentDate.setDate(currentDate.getDate() + daysToAdd));
-
+async function postponeDelegationPaymentDue(id: string, newDateString: string) {
+  
+   // Corrige o deslocamento de fuso (para América/São_Paulo)
+  const userDate = new Date(newDateString);
+  const fixedDate = new Date(userDate.getTime() + userDate.getTimezoneOffset() * 60000); // remove o offset UTC
+  
   return prisma.delegation.update({
     where: {
       id
     },
     data: {
-      paymentExpirationDate: newDate,
+      paymentExpirationDate: fixedDate,
     }
   })
 }
