@@ -66,6 +66,8 @@ const styles = StyleSheet.create({
   page: {
     padding: 20,
     display: "flex",
+    justifyContent: "center",
+    alignContent: "center",
   },
   section: {
     marginBottom: 20,
@@ -76,7 +78,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   text: {
-    fontSize: 10,
+    fontSize: 8,
+    marginBottom: 5,
   },
 });
 
@@ -88,7 +91,7 @@ const PDFDocument = ({
 }) => (
   <Document>
     {users.map((user, index) => (
-      <Page size={{ width: 210, height: 100 }} style={styles.page}>
+      <Page size={{ width: 250, height: 90 }} style={styles.page}>
         <View key={index} style={styles.section}>
           <Text style={styles.text}>Name: {user.name}</Text>
           <Text style={styles.barcode}>*{user.numericId}*</Text>
