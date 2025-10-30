@@ -1,14 +1,22 @@
 import { json, LoaderFunctionArgs } from "@remix-run/node";
 import { prisma } from "~/db.server";
 import { requireAdminId } from "~/session.server";
-import { Page, Text, View, Document, StyleSheet, Font, renderToStream } from '@react-pdf/renderer';
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Font,
+  renderToStream,
+} from "@react-pdf/renderer";
 import path from "path";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await requireAdminId(request)
+  await requireAdminId(request);
 
   try {
-    let users = await getAllUsers()
+    let users = await getAllUsers();
 
     // render the PDF as a stream so you do it async
     let stream = await renderToStream(<PDFDocument users={users} />);
@@ -30,26 +38,26 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     let headers = new Headers({ "Content-Type": "application/pdf" });
     return new Response(body, { status: 200, headers });
   } catch (error) {
-    console.log(error)
-    return json({})
+    console.log(error);
+    return json({});
   }
-}
+};
 
 async function getAllUsers() {
   return prisma.user.findMany({
     select: {
       name: true,
-      numericId: true
+      numericId: true,
     },
     orderBy: {
-      name: "asc"
-    }
-  })
+      name: "asc",
+    },
+  });
 }
 
 // Register the barcode font
 Font.register({
-  family: 'Barcode39',
+  family: "Barcode39",
   src: path.join(process.cwd(), "public", "fonts", "3OF9_NEW.TTF"),
 });
 
@@ -63,25 +71,29 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   barcode: {
-    fontFamily: 'Barcode39',
+    fontFamily: "Barcode39",
     fontSize: 28,
     marginTop: 5,
   },
   text: {
-    fontSize: 16,
+    fontSize: 10,
   },
 });
 
 // Define the PDF Document
-const PDFDocument = ({ users }: { users: { name: string; numericId: number | null }[] }) => (
+const PDFDocument = ({
+  users,
+}: {
+  users: { name: string; numericId: number | null }[];
+}) => (
   <Document>
-    <Page size="A4" style={styles.page}>
-      {users.map((user, index) => (
+    {users.map((user, index) => (
+      <Page size={{ width: 210, height: 100 }} style={styles.page}>
         <View key={index} style={styles.section}>
           <Text style={styles.text}>Name: {user.name}</Text>
           <Text style={styles.barcode}>*{user.numericId}*</Text>
         </View>
-      ))}
-    </Page>
+      </Page>
+    ))}
   </Document>
 );
