@@ -13,3 +13,9 @@ No fim das contas, ele salvou na planilha
 25/10 - 23:05
 
 Teste com o leitor. Funcionou (?????????)
+
+
+03/11/2025
+
+Refatoração do api.admin.credentials.pdf
+    Usa PDFKit para renderizar todas as páginas, no formato do PIMACO 6180, em muito menos tempo

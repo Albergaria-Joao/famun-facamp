@@ -1,45 +1,51 @@
-import { json, LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs } from "@remix-run/node";
 import { prisma } from "~/db.server";
 import { requireAdminId } from "~/session.server";
-import {
-  Page,
-  Text,
-  View,
-  Document,
-  StyleSheet,
-  Font,
-  renderToStream,
-} from "@react-pdf/renderer";
-import path from "path";
+import PDFDocument from "pdfkit";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireAdminId(request);
 
   try {
-    let users = await getAllUsers();
+    const users = await getAllUsers();
 
-    // render the PDF as a stream so you do it async
-    let stream = await renderToStream(<PDFDocument users={users} />);
+    // Essa biblioteca funciona com um "stream" de escrita, para ir adicionando as coisas
+    const doc = new PDFDocument({ autoFirstPage: false }); //cria pág vazia se não tiver false
 
-    // and transform it to a Buffer to send in the Response
-    let body: Buffer = await new Promise((resolve, reject) => {
-      let buffers: Uint8Array[] = [];
-      stream.on("data", (data) => {
-        buffers.push(data);
+    const chunks: Buffer[] = []; // esse stream funciona com base num buffer, em que vamos jogando bloquinhos (chunks)
+    doc.on("data", (chunk) => chunks.push(chunk));
+    const done = new Promise<Buffer>(
+      (resolve) => doc.on("end", () => resolve(Buffer.concat(chunks))), // Quando chegar no end lá embaixo, ele vai juntar todos esses blocos
+    );
+
+    for (const user of users) {
+      doc.addPage({
+        size: [189, 72], // Tamanho do PIMACO 6180 que o Palaro falou (66,7mm x 25,4mm) convertido para pt
+        margins: { top: 15, left: 10, right: 10, bottom: 10 },
       });
-      stream.on("end", () => {
-        resolve(Buffer.concat(buffers));
-      });
-      stream.on("error", reject);
+
+      doc.font("Helvetica").fontSize(8).text(`Name: ${user.name}`);
+      doc
+        .font("public/fonts/3OF9_NEW.TTF")
+        .fontSize(28)
+        .text(`*${user.numericId}*`);
+
+      // Em cada iteraçaõ do for, vai disparar o evento "data" lá em cima e dar push nesse bloco para o documento
+    }
+
+    doc.end();
+
+    const body = await done; // fica esperando a promise done terminar para aí então retornar esse corpo do pdf
+    // promise = resultado da operação assíncrona. O código continua executando, enquanto isso aqui espera retornar
+    return new Response(body, {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": "inline; filename=usuarios.pdf",
+      },
     });
-
-    // finally create the Response with the correct Content-Type header for
-    // a PDF
-    let headers = new Headers({ "Content-Type": "application/pdf" });
-    return new Response(body, { status: 200, headers });
   } catch (error) {
-    console.log(error);
-    return json({});
+    console.error(error);
+    return new Response("Erro ao gerar PDF", { status: 500 });
   }
 };
 
@@ -54,49 +60,3 @@ async function getAllUsers() {
     },
   });
 }
-
-// Register the barcode font
-Font.register({
-  family: "Barcode39",
-  src: path.join(process.cwd(), "public", "fonts", "3OF9_NEW.TTF"),
-});
-
-// Define styles for the PDF
-const styles = StyleSheet.create({
-  page: {
-    padding: 20,
-    display: "flex",
-    justifyContent: "center",
-    alignContent: "center",
-  },
-  section: {
-    marginBottom: 20,
-  },
-  barcode: {
-    fontFamily: "Barcode39",
-    fontSize: 28,
-    marginTop: 5,
-  },
-  text: {
-    fontSize: 8,
-    marginBottom: 5,
-  },
-});
-
-// Define the PDF Document
-const PDFDocument = ({
-  users,
-}: {
-  users: { name: string; numericId: number | null }[];
-}) => (
-  <Document>
-    {users.map((user, index) => (
-      <Page size={{ width: 250, height: 90 }} style={styles.page}>
-        <View key={index} style={styles.section}>
-          <Text style={styles.text}>Name: {user.name}</Text>
-          <Text style={styles.barcode}>*{user.numericId}*</Text>
-        </View>
-      </Page>
-    ))}
-  </Document>
-);
