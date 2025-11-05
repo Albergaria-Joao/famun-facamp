@@ -118,7 +118,7 @@ const Delegation = () => {
   const [handlePostponePayment, postponePaymentState] = usePostponePayment()
   const [hasDelegates, participantLength, sentDocuments, paidParticipants, totalPaid] = viewDelegationData(delegation)
   const [selectedDate, setSelectedDate] = React.useState('')
-  const [showPostponeForm, setShowPostponeForm] = React.useState(false)
+  
 
 
 
@@ -271,43 +271,32 @@ const Delegation = () => {
           })}
         </div>
 
+    
+
+      
+        <div className="flex items-center gap-2">
+          <input
+            type="date"
+            value={selectedDate}
+            min={new Date(delegation.paymentExpirationDate).toISOString().split("T")[0]} // Impede datas menores
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="border rounded-lg px-3 py-2 text-lg w-56"
+              />
+        </div>
+
         <Button
           className="secondary-button-box green-light"
-          isDisabled={!delegation}
-          onPress={() => setShowPostponeForm(true)}
-          
-        >
-          Adiar Pagamento
+          isDisabled={
+          !delegation ||
+          !selectedDate ||
+          new Date(selectedDate) < new Date(delegation.paymentExpirationDate) // Desativa botão se data for menor
+          }
+          onPress={() => handlePostponePayment(delegation.id, selectedDate)}
+          >
+          {postponePaymentState !== 'idle' && <Spinner dim="18px" color="green" />}
+          Confirmar
         </Button>
-
-
-        {showPostponeForm && (
-          <>
-            <div className="flex items-center gap-2">
-              <input
-                type="date"
-                value={selectedDate}
-                min={new Date(delegation.paymentExpirationDate).toISOString().split("T")[0]} // 🔒 Impede datas menores
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="border rounded-lg px-3 py-2 text-lg w-56"
-              />
-            </div>
-
-            <Button
-              className="secondary-button-box green-light"
-              isDisabled={
-                !delegation ||
-                !selectedDate ||
-                new Date(selectedDate) < new Date(delegation.paymentExpirationDate) // 🔒 Desativa botão se data for menor
-              }
-              onPress={() => handlePostponePayment(delegation.id, selectedDate)}
-            >
-              {postponePaymentState !== 'idle' && <Spinner dim="18px" color="green" />}
-              Confirmar
-            </Button>
-          </>
-        )}
-              
+            
       </div>
       
 
