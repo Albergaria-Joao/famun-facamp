@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 const prisma = new PrismaClient();
 
 async function seed() {
-	/* await prisma.admin.delete({ where: { email: "famun@facamp.com.br" } }).catch((error) => console.log("No user found!"))
+	await prisma.admin.delete({ where: { email: "famun@facamp.com.br" } }).catch((error) => console.log("No user found!"))
 
 	await prisma.admin.create({
 		data: {
@@ -14,20 +14,20 @@ async function seed() {
 		}
 	})
 
-  await prisma.configuration.create({
-    data: {
-      name: "default",
-      precoDelegadoEnsinoMedio: 18000,
-      precoDelegadoInternacional: 18000,
-      precoDelegadoUniversidade: 18000,
-      precoFacultyAdvisors: 18000,
-      precoProfessorOrientador: 18000,
-    }
-  }) */
+	await prisma.configuration.create({
+		data: {
+			name: "default",
+			precoDelegadoEnsinoMedio: 18000,
+			precoDelegadoInternacional: 18000,
+			precoDelegadoUniversidade: 18000,
+			precoFacultyAdvisors: 18000,
+			precoProfessorOrientador: 18000,
+		}
+	})
 
-  const user = await prisma.user.
+	const user = await prisma.user.
 
-  console.log(user)
+		console.log(user)
 
 	console.log(`Database has been seeded. 🌱`);
 }
