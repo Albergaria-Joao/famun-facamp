@@ -19,7 +19,7 @@ const PaymentForm = ({ WEBSITE_URL, paymentNames }: { WEBSITE_URL: string, payme
     await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${WEBSITE_URL}/dashboard/payments/completed`
+        return_url: `${WEBSITE_URL}dashboard/payments/completed` // Tinha uma / antes de dashboard que tava dando erro (JOÃO)
       }
     })
     setIsSubmitting(false)

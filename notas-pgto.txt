@@ -1,0 +1,16 @@
+Criando uma delegação e indo em fazer os pagamentos ==> rota dashboard.payments.pending
+
+Depois, vai para a rota pay.s, onde pode-se colocar um código promocional
+
+Clicando em próximo, vai para a rota pay.c, onde são inseridas as infos da forma de pagto
+
+
+Gerando um boleto (a partir do forms na pasta components dessa rota), ele já aparece na rota de pagamentos pendentes 
+e/ou é aberto numa aba do Stripe
+
+* Mudar WEBSITE_URL no env para a porta 3000
+
+
+Cartão de teste do Stripe: 4242 4242 4242 4242
+
+As coisas do Stripe são pegas a partir de dependências no package.json
