@@ -12,6 +12,8 @@ import { Elements } from "@stripe/react-stripe-js";
 import PaymentForm from "./components/paymentForm";
 import { checkCuponCode } from "~/models/configuration.server";
 
+import { createAsaasCheckoutUrl } from "~/asaas.server";
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   // get all user names that were selected to be paid
@@ -36,27 +38,73 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return sum;
   }, 0) as number;
 
-  // create the payment intent
-  let paymentIntent
+  // STRIPE
+  // // create the payment intent
+  // let paymentIntent
+  // try {
+  //   paymentIntent = await createPaymentIntent(
+  //     { price, userId: user.id, email: user.email, stripeCustomerId: user.stripeCustomerId as string, payments, currency: payments[0].currency }
+  //   )
+  // } catch (error) {
+  //   console.log(error)
+  //   throw json({
+  //     errors: { paymentIntent: "Failed to load payment intent" },
+  //     status: 400
+  //   })
+  // }
+
+  // ASAAS
+  let checkoutUrl: string;
+
   try {
-    paymentIntent = await createPaymentIntent(
-      { price, userId: user.id, email: user.email, stripeCustomerId: user.stripeCustomerId as string, payments, currency: payments[0].currency }
-    )
+    checkoutUrl = await createAsaasCheckoutUrl(price, {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      cpfCnpj: user.cpf,
+      mobilePhone: user.phoneNumber, 
+      //address: "aaaaaaa", // Ainda não fui atrás pra ver como pegar o endereço
+      address: "Av. Paulista", // Endereço obrigatório
+      addressNumber: "150",
+      complement: "Sala 1",
+      province: "Centro", // Bairro obrigatório
+      postalCode: "01310-100", // CEP obrigatório
+    });
+    console.log(checkoutUrl);
+    // name: nomeDoCliente,
+    // cpfCnpj: "218.002.330-86", // CPF válido gerado para teste
+    // email: "cliente.teste@example.com",
+    // mobilePhone: "11999998888", // Celular é obrigatório
+    // address: "Av. Paulista", // Endereço obrigatório
+    // addressNumber: "150",
+    // complement: "Sala 1",
+    // province: "Centro", // Bairro obrigatório
+    // postalCode: "01310-100" // CEP obrigatório
+
   } catch (error) {
-    console.log(error)
+    console.error("Erro fatal ao gerar Asaas Checkout:", error);
     throw json({
-      errors: { paymentIntent: "Failed to load payment intent" },
+      errors: { asaasCheckout: "Falha ao gerar link de pagamento." },
       status: 400
-    })
+    });
   }
 
+
   // return payment intent and the price
-  return json({ paymentIntent, price, payments, WEBSITE_URL: process.env.WEBSITE_URL, STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY as string })
+  //return json({ paymentIntent, price, payments, WEBSITE_URL: process.env.WEBSITE_URL, STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY as string })
+  return json({ 
+    checkoutUrl, 
+    price, 
+    payments,
+    currency: payments[0].currency // Pega o campo de currency direto da estrutura de payments em vez desse intent do Stripe
+  });
 }
 
 const CompletePayments = () => {
-  const { paymentIntent, price, payments, WEBSITE_URL, STRIPE_PUBLIC_KEY } = useLoaderData<typeof loader>()
-  const [stripePromise, setStripePromise] = React.useState(() => loadStripe(STRIPE_PUBLIC_KEY))
+  //const { paymentIntent, price, payments, WEBSITE_URL, STRIPE_PUBLIC_KEY } = useLoaderData<typeof loader>()
+
+  //const [stripePromise, setStripePromise] = React.useState(() => loadStripe(STRIPE_PUBLIC_KEY))
+    const { checkoutUrl, price, payments, currency } = useLoaderData<typeof loader>();
   const [delegatesPaymentsCount, advisorPaymentsCount, paymentNames] = usePaymentsData(payments)
   const locale = getCurrentLocale()
 
@@ -87,21 +135,15 @@ const CompletePayments = () => {
       </ul>
 
       <div className='pay-price' style={{ margin: 0 }}>
-        {(price / 100).toLocaleString(locale, { style: "currency", currency: paymentIntent.currency })}
+        {(price / 100).toLocaleString(locale, { style: "currency", currency: currency })}
       </div>
 
-      <Elements
-        stripe={stripePromise}
-        options={{ clientSecret: paymentIntent.client_secret as string }}
+      <a 
+        href={checkoutUrl} 
+        className="pay-submit-button" 
       >
-        {paymentIntent !== undefined ?
-          <PaymentForm
-            WEBSITE_URL={WEBSITE_URL as string}
-            paymentNames={paymentNames}
-          /> :
-          null
-        }
-      </Elements>
+        Ir para o Pagamento Seguro
+      </a>
     </div>
   )
 }

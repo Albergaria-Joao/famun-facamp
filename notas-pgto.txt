@@ -14,3 +14,10 @@ e/ou é aberto numa aba do Stripe
 Cartão de teste do Stripe: 4242 4242 4242 4242
 
 As coisas do Stripe são pegas a partir de dependências no package.json
+
+
+
+11/03/26 - integração com Asaas
+Mudei no app/routes/pay.c
+
+Criei um app/asaas.server.ts p/ rodar a criação de URL do checkout em segundo plano (basicamente copiei do teste que o Pedro fez)
