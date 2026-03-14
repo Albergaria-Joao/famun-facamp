@@ -1,16 +1,19 @@
-export async function createAsaasCheckoutUrl(price: number, cData: any) {
+
+export async function createAsaasCheckoutUrl(quantity: number, price: number, cData: any) {
+    const year = new Date().getFullYear()
     console.log("aqui 1")
-    let decimalPrice = price / 100; // Verificar se tem alguma questão de ponto flutuante que torne essa divisão insegura
+    console.log(quantity)
+    let decimalPrice = price / 100 / quantity; // Verificar se tem alguma questão de ponto flutuante que torne essa divisão insegura
     //console.log(decimalPrice)
     const payload: any = {
         billingTypes:["PIX", "CREDIT_CARD"],
         
         chargeTypes:["DETACHED"],
         
-        name: "Teste de Integração #001",
+        name: "Teste de integração",
         description: "Checkout criado via Script de Teste",
         
-        items: [{"name": "roupa","quantity": 1,"value": decimalPrice}], // Ainda preciso ver como pegar os itens do carrinho
+        items: [{"name": `Inscrição Famun ${year}`,"quantity": quantity,"value": decimalPrice}], // Ainda preciso ver como pegar os itens do carrinho
 
         callback: {
             successUrl: "https://google.com?status=sucesso", // Fazer urls de sucesso e fracasso

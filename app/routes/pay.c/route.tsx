@@ -37,7 +37,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     }
     return sum;
   }, 0) as number;
-
+  const [delegatesPaymentsCount, advisorPaymentsCount] = usePaymentsData(payments)
+  const quantity = delegatesPaymentsCount??0 + advisorPaymentsCount??0;
+  console.log("qtt:", quantity);
+  
   // STRIPE
   // // create the payment intent
   // let paymentIntent
@@ -57,7 +60,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   let checkoutUrl: string;
 
   try {
-    checkoutUrl = await createAsaasCheckoutUrl(price, {
+    checkoutUrl = await createAsaasCheckoutUrl(quantity, price, {
       userId: user.id,
       email: user.email,
       name: user.name,
