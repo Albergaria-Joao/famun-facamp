@@ -1,6 +1,7 @@
 import React from "react"
 import { FiCheck, FiEdit, FiTrash2, FiX } from "react-icons/fi/index.js"
 import Spinner from "~/components/spinner"
+import { isSystemOpen } from "~/utils/deadlines"
 
 export function useButtonState(
   userWantsToChangeData: boolean,
@@ -10,13 +11,8 @@ export function useButtonState(
   changeLeaderTransition: "idle" | "loading" | "submitting",
   allowChanges: boolean
 ) {
-  // --- LÓGICA DE DATA ADICIONADA ---
-  // Obs.: no JS, janeiro = 0, fev: 1 ...
-  const dataLimite = new Date(2025, 3, 20, 23, 59, 59); 
-  const agora = new Date();
-  const showEditButton = agora < dataLimite; // Retorna 'false' se o prazo passou
+  const showEditButton = isSystemOpen();
 
-  // -----------------------------
   const [buttonLabel, setButtonLabel] = React.useState("Editar Dados")
   const [buttonIcon, setButtonIcon] = React.useState(<FiEdit className="icon" />)
   const [buttonColor, setButtonColor] = React.useState("gray")

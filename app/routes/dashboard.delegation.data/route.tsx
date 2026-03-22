@@ -33,10 +33,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const delegationId = await requireDelegationId(request)
   const config = await getParticipantConfigurationRequirements()
   
-  if (!config?.allowParticipantsChangeData ?? false) return json(
+  if (!(config?.allowParticipantsChangeData ?? false)) {
+  return json(
     { errors: { error: "Prazo para edição de dados encerrou" } },
     { status: 400 }
   );
+  }
   let delegationChanges = qs.parse(formData.get("delegationChanges") as string)
   let participantChanges = qs.parse(formData.get("participantChanges") as string)
   let selectedUserId = formData.get("selectedUserId") as string

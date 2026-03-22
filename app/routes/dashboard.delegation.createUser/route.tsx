@@ -4,6 +4,7 @@ import { Form, useFetcher, useLoaderData, useOutletContext } from "@remix-run/re
 import { AnimatePresence } from "framer-motion";
 import qs from "qs"
 import { motion } from "framer-motion";
+import { isSystemOpen } from "~/utils/deadlines"; // 1. Importação centralizada
 
 import { createUser, getExistingUser } from "~/models/user.server"
 import { DelegationType } from "~/models/delegation.server"
@@ -33,10 +34,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const delegation = await requireDelegation(request)
   const config = await getParticipantConfigurationRequirements()
   
-  if (!config?.allowParticipantsChangeData) return json(
-    { errors: { error: "Prazo para edição de dados encerrou" } },
-    { status: 400 }
-  );
+  // 2. SEGURANÇA NO SERVIDOR: Bloqueia se a config for false OU se a data expirou
+  const canCreate = (config?.allowParticipantsChangeData ?? false) && isSystemOpen();
+
+  if (!canCreate) {
+    return json(
+      { errors: { error: "O prazo para adicionar novos participantes encerrou." } },
+      { status: 400 }
+    );
+  }
+
   const formData = await request.formData()
   const newUserData = qs.parse(formData.get("newUserData") as string)
 
@@ -102,7 +109,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       },
       numericId: await generateNumercId()
     })
-    const info = await sendEmail({
+    await sendEmail({
       to: newUser.email,
       subject: "Bem-vindo a Famun",
       html: manualCreateUserEmail(user.name, delegation.school, newUser, password, process.env.WEBSITE_URL ?? "app.famun.com.br")
@@ -116,9 +123,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const delegation = await requireDelegation(request)
-
   const councils = await getCouncils(delegation.participationMethod)
-
   return json({ councils })
 }
 
@@ -131,15 +136,24 @@ const CreateUser = () => {
       allowParticipantsSendDocuments: boolean | null;
     }
   } = useOutletContext()
+  
+  // 3. Unificando a lógica de permissão visual
   const allowParticipantsChangeData = config?.allowParticipantsChangeData ?? false
+  const systemOpen = isSystemOpen(); // Data hardcoded
+  const canShowInterfaceActions = allowParticipantsChangeData && systemOpen;
+
   const { councils } = useLoaderData<typeof loader>()
   const delegatesCount = delegation.participants?.filter(user => user.delegate !== null).length as number
   const user = useUser()
   const userType = useUserType()
   const fetcher = useFetcher()
+  
   const { creatingUserType, changeCreatingUserType, creationPermission, handleChange, handleSubmission, editUserDataId } =
     useUserCreation(user, userType, fetcher, delegatesCount, delegation, delegation.participationMethod, councils as string[], allowParticipantsChangeData)
-  const [buttonLabel, buttonIcon, buttonColor] = useButtonState(creationPermission?.allowed, fetcher.state, allowParticipantsChangeData)
+  
+  // 4. Capturando showCreateButton do Hook
+  const [buttonLabel, buttonIcon, buttonColor, showCreateButton] = useButtonState(creationPermission?.allowed, fetcher.state, allowParticipantsChangeData)
+  
   const [modalContext, state] = useModalContext(fetcher)
 
   return (
@@ -147,44 +161,46 @@ const CreateUser = () => {
       {state.isOpen &&
         <Modal state={state} isDismissable>
           <Dialog maxWidth>
-            <div className="dialog-title">
-              Novo usuário criado!
-            </div>
-
+            <div className="dialog-title">Novo usuário criado!</div>
             <div className="dialog-title">
               Será enviado um email para {modalContext?.email} <br /> avisando {modalContext?.name} sobre a sua inscrição!
             </div>
-
-            <Button className="secondary-button-box blue-dark" onPress={state.close}>
-              Fechar
-            </Button>
+            <Button className="secondary-button-box blue-dark" onPress={state.close}>Fechar</Button>
           </Dialog>
         </Modal>
       }
 
       <div className="delegation-data-title-box" style={{ marginTop: 0 }}>
         <div className="delegation-data-title" ref={buttonRef}>
-          {creationPermission === undefined ? <></> :
-            creationPermission ?
+          {/* BOTÃO PRINCIPAL: Só aparece se estiver no prazo */}
+          {showCreateButton && (
+            creationPermission ? (
               <Button
                 className={`secondary-button-box ${buttonColor ? `${buttonColor}-light` : ""}`}
                 onPress={handleSubmission}
                 isDisabled={!creationPermission?.allowed}
               >
                 {buttonIcon} {buttonLabel}
-              </Button> :
-              <p className="data-box-subtitle label error">
-                Somente os líderes e os orientadores podem adicionar participantes manualmente
-              </p>
-          }
+              </Button>
+            ) : (
+              creationPermission !== undefined && (
+                <p className="data-box-subtitle label error">
+                  Somente os líderes e os orientadores podem adicionar participantes manualmente.
+                </p>
+              )
+            )
+          )}
         </div>
       </div>
 
-      {!allowParticipantsChangeData && <i className='payments-warning'>
-        Aviso:
-        <br />
-        O prazo para adicionar participantes foi encerrado!
-      </i>}
+      {/* AVISO: Aparece se o prazo no banco fechou OU se a data expirou */}
+      {!canShowInterfaceActions && (
+        <i className='payments-warning'>
+          Aviso:
+          <br />
+          O prazo para adicionar participantes foi encerrado!
+        </i>
+      )}
 
       <div className="delegation-data-title-box">
         <Select
@@ -196,25 +212,24 @@ const CreateUser = () => {
             { id: "delegate", name: "Delegado" },
             { id: "advisor", name: "Professor(a) Orientador(a)" },
           ]}
-          isDisabled={creationPermission?.type === "userType"}
+          isDisabled={creationPermission?.type === "userType" || !systemOpen}
         >
           {(item) => <Item>{item.name}</Item>}
         </Select>
 
-        {creatingUserType === "delegate" && creationPermission ?
+        {creatingUserType === "delegate" && creationPermission && systemOpen && (
           <div className="delegation-data-delegates-countdown">
             <div className="secondary-button-box red-light">
               <div className='button-child'>
                 {delegation.maxParticipants - delegatesCount} vagas restantes para delegados
               </div>
             </div>
-          </div> :
-          null
-        }
+          </div>
+        )}
       </div>
 
       <EditUserData
-        isDisabled={!creationPermission?.allowed}
+        isDisabled={!creationPermission?.allowed || !systemOpen}
         actionData={fetcher.data}
         defaultValues={defaultUser(councils as string[], delegation.participationMethod)}
         handleChange={handleChange}
@@ -224,7 +239,8 @@ const CreateUser = () => {
       />
 
       <AnimatePresence>
-        {creationPermission?.allowed && !isRefVisible && (
+        {/* BOTÃO STICKY: Também respeita o showCreateButton */}
+        {creationPermission?.allowed && showCreateButton && !isRefVisible && (
           <motion.div
             className="sticky-button"
             initial={{ opacity: 0 }}
@@ -246,4 +262,4 @@ const CreateUser = () => {
   )
 }
 
-export default CreateUser
+export default CreateUser;
