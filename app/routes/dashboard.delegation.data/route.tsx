@@ -151,7 +151,7 @@ const DelegationData = () => {
     useDelegationUpdate(allowChanges, delegation, fetcher as FetcherWithComponents<FetcherType>, removeParticipantFetcher, changeLeaderFetcher)
   const userDataRef =
     useUserScroll(searchParams, delegation, setSelectedUserId)
-  const [buttonLabel, buttonIcon, buttonColor, removeParticipantButtonIcon, removeParticipantButtonLabel, changeLeaderButtonIcon, changeLeaderButtonLabel] =
+  const [buttonLabel, buttonIcon, buttonColor, removeParticipantButtonIcon, removeParticipantButtonLabel, changeLeaderButtonIcon, changeLeaderButtonLabel, showEditButton] =
     useButtonState(userWantsToChangeData, readySubmission, fetcher.state, removeParticipantFetcher.state, changeLeaderFetcher.state, allowChanges)
 
   return (
@@ -162,7 +162,7 @@ const DelegationData = () => {
         O prazo para edição de dados foi encerrado!
       </i>}
 
-      {allowChanges &&
+      {allowChanges && showEditButton && (
         <div className="delegation-data-title-box" style={{ marginTop: 0 }}>
           <div className="delegation-data-title" ref={buttonRef}>
             <Button
@@ -174,7 +174,7 @@ const DelegationData = () => {
             </Button>
           </div>
         </div>
-      }
+      )}
 
       <EditDelegationData
         isDisabled={!userWantsToChangeData}
@@ -314,7 +314,7 @@ const DelegationData = () => {
       }
 
       <AnimatePresence>
-        {allowChanges && !isRefVisible && (
+        {allowChanges && showEditButton && !isRefVisible && (
           <motion.div
             className="sticky-button"
             initial={{ opacity: 0 }}

@@ -10,6 +10,13 @@ export function useButtonState(
   changeLeaderTransition: "idle" | "loading" | "submitting",
   allowChanges: boolean
 ) {
+  // --- LÓGICA DE DATA ADICIONADA ---
+  // Obs.: no JS, janeiro = 0, fev: 1 ...
+  const dataLimite = new Date(2025, 3, 20, 23, 59, 59); 
+  const agora = new Date();
+  const showEditButton = agora < dataLimite; // Retorna 'false' se o prazo passou
+
+  // -----------------------------
   const [buttonLabel, setButtonLabel] = React.useState("Editar Dados")
   const [buttonIcon, setButtonIcon] = React.useState(<FiEdit className="icon" />)
   const [buttonColor, setButtonColor] = React.useState("gray")
@@ -21,6 +28,9 @@ export function useButtonState(
   const [changeLeaderButtonLabel, setChangeLeaderButtonLabel] = React.useState("Nomear o Líder da Delegação")
 
   React.useEffect(() => {
+    // Se não for para mostrar o botão, nem perdemos tempo calculando o estado dele
+    if (!showEditButton) return;
+
     setButtonLabel(transition !== 'idle' ?
       "Salvando" :
       !userWantsToChangeData ?
@@ -58,5 +68,14 @@ export function useButtonState(
     setChangeLeaderButtonLabel(changeLeaderTransition !== "idle" ? "Atualizando" : "Nomear o Líder da Delegação")
   }, [changeLeaderTransition])
 
-  return [buttonLabel, buttonIcon, buttonColor, removeParticipantButtonIcon, removeParticipantButtonLabel, changeLeaderButtonIcon, changeLeaderButtonLabel]
+  return [
+    buttonLabel, 
+    buttonIcon, 
+    buttonColor, 
+    removeParticipantButtonIcon, 
+    removeParticipantButtonLabel, 
+    changeLeaderButtonIcon, 
+    changeLeaderButtonLabel,
+    showEditButton // Para resolver a questão de exibição na data correta
+  ]
 }
