@@ -6,7 +6,7 @@ export async function createAsaasCheckoutUrl(quantity: number, price: number, cD
     let decimalPrice = price / 100 / quantity; // Verificar se tem alguma questão de ponto flutuante que torne essa divisão insegura
     //console.log(decimalPrice)
     const payload: any = {
-        billingTypes:["PIX", "CREDIT_CARD"],
+        billingTypes:["CREDIT_CARD"],
         
         chargeTypes:["DETACHED"],
         
