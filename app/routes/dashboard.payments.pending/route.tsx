@@ -21,28 +21,28 @@ const PendingPayments = () => {
       <i className='payments-warning'>
         Observações:
         <br />
-        <b>1. Garantia das vagas</b>
         <br />
-        Para garantir suas vagas no FAMUN 2025, a delegação deve realizar o pagamento de TODOS(AS) OS(AS) PARTICIPANTES (delegados(as) e Professores(as) Orientadores(as)) em até 7 dias corridos, a contar da data da inscrição. 
-        <br />
-        Caso os pagamentos não sejam realizados nesse período, a inscrição será cancelada e a delegação deverá realizar uma nova inscrição, caso deseje participar da conferência. A nova inscrição dependerá da disponibilidade de vagas.
+        <b>1. Garantia das vagas</b><br />
+        Para garantir suas vagas no FAMUN {new Date().getFullYear()}, você deve realizar TODOS OS PAGAMENTOS em até 7 dias corridos a contar da data da inscrição. 
         <br />
         <br />
-        <b>2. Formas de pagamento</b>
-        <br />
-        Os pagamentos podem ser feitos individualmente por cada participante; ou os Professores Orientadores e Head Delegates podem pagar a inscrição de todos(as) os(as) delegados(as). A delegação pode escolher a forma que melhor lhe convier.
+        Caso os pagamentos não sejam realizados nesse período, a inscrição será cancelada e a delegação deverá realizar uma nova inscrição caso deseje participar da conferência. A nova inscrição dependerá da disponibilidade de vagas.
         <br />
         <br />
 
-        <b>Pagamento via cartão de crédito ou boleto:</b> clique em “Pagar” abaixo. O próprio sistema gerará o recibo e você receberá um e-mail.
+        <b>2. Formas de pagamento</b><br />
+        Os pagamentos podem ser feitos individualmente por cada participante; ou o(a) Professor(a) Orientador(a) e o(a) Chefe de Delegação podem pagar a inscrição de todos os(as) delegados(as). A delegação pode escolher a forma que melhor lhe convier.
         <br />
         <br />
-
-        <b>Pagamento via PIX:</b> pague o valor correspondente à sua taxa de inscrição usando a Chave PIX: famun@facamp.com.br. Após terminar a transição, anexe o comprovante do PIX na aba “Documentos”. Salve o comprovante com o nome da delegação correspondente ao pagamento.
+        Pagamento via cartão de crédito, boleto ou PIX: clique em “Pagar” abaixo. O próprio sistema gerará o recibo e você receberá um e-mail.
         <br />
         <br />
-
-        <b>ATENÇÃO: o FAMUN {new Date().getFullYear()} não realiza reembolso ou ressarcimento das taxas de inscrição, sob nenhuma circunstância.</b>
+        Após terminar o pagamento, anexe o comprovante na aba “Documentos”. Salve o comprovante com o nome da delegação correspondente ao pagamento.
+        <br />
+        <br />
+        ATENÇÃO: O FAMUN {new Date().getFullYear()} não realiza reembolso ou ressarcimento das taxas de inscrição, sob nenhuma circunstância.
+        <br />
+        <br />
       </i>
 
       {requiredPayments?.find(el => el.available) ?
