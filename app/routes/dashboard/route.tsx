@@ -37,9 +37,9 @@ const Dashboard = () => {
   const menuItems = [
     { name: "Início", to: "home", active: "/dashboard/home", icon: <FiHome className='icon' /> },
     { name: "Dados da inscrição", to: "profile", active: "/dashboard/profile", icon: <FiEdit className='icon' /> },
-    { name: "Delegação", to: "delegation/participants", active: "/dashboard/delegation", icon: <FiFlag className='icon' /> },
-    { name: "Pagamentos", to: "payments/pending", active: "/dashboard/payments", icon: <FiCreditCard className='icon' /> },
-    { name: "Documentos", to: "documents", active: "/dashboard/documents", icon: <FiFile className='icon' /> },
+    { name: "Etapa 2 - Delegação", to: "delegation/participants", active: "/dashboard/delegation", icon: <FiFlag className='icon' /> },
+    { name: "Etapa 1 - Pagamentos", to: "payments/pending", active: "/dashboard/payments", icon: <FiCreditCard className='icon' /> },
+    { name: "Etapa 3 - Documentos", to: "documents", active: "/dashboard/documents", icon: <FiFile className='icon' /> },
   ]
 
   return (

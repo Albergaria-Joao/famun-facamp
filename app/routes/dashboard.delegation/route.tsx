@@ -86,14 +86,17 @@ const Delegation = () => {
         <br />
         <br />
         <b>1. Preenchimento dos dados pessoais dos integrantes da delegação</b><br />
-        Após a confirmação do pagamento da inscrição, a delegação terá<b> até a data limite de 02 de junho de 2025</b> para preencher os dados pessoais de todos(as) os(as) delegados(as) e Professores(as) Orientadores(as) que comporão a delegação no sistema de inscrições.
-        <br />
-        <b>ATENÇÃO: Caso os dados pessoais de todos(as) os(as) integrantes não estejam preenchidos, as vagas não preenchidas serão canceladas e transferidas para a lista de espera. As vagas canceladas não terão reembolso. </b>
+        Após a confirmação do pagamento da inscrição, a delegação terá <b>até o dia 12 de junho de 2026</b> para preencher no sistema os dados pessoais de todos(as) os(as) delegados(as) e professores(as) orientadores(as) que comporão a delegação. 
         <br />
         <br />
-        <b>2. Alterações ou substituições </b>
+        <b>ATENÇÃO: Caso os dados pessoais de todos os integrantes não estejam preenchidos até essa data, as vagas não preenchidas serão canceladas e transferidas para a lista de espera. As vagas canceladas não terão reembolso.</b>
         <br />
-        As delegações poderão realizar a alteração de dados ou a substituição de participantes já inscritos (delegados(as) e Professores Orientadores) <b>até a data limite de 08 de agosto de 2025</b> no sistema de inscrições.  Após essa data, não serão aceitas nenhuma alteração ou substituição. <b>Integrantes que desistirem de participar não terão reembolso. </b>
+        <br />
+
+        <b>2. Alterações ou substituições</b><br />
+        As delegações poderão realizar a alteração de dados ou a substituição de participantes já inscritos (delegados(as) e professores(as) orientadores(as)) <b>até a data limite de 10 de agosto de 2026.</b> Após essa data, não será aceita nenhuma alteração ou substituição. <b>Integrantes que desistirem de participar não terão reembolso.</b> 
+        <br />
+        <br />
       </i>
 
       <div className={`section-menu ${isSticky ? "sticky" : ""}`} ref={stickyRef}>
