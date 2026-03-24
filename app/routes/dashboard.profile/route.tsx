@@ -97,19 +97,19 @@ const Profile = () => {
   const userType = useUserType()
   const { readySubmission, userWantsToChangeData, handleSubmission, handleChange } =
     useUserUpdate(user, fetcher, allowParticipantsChangeData)
-  const [buttonLabel, buttonIcon, buttonColor] = useButtonState(userWantsToChangeData, readySubmission, fetcher.state, allowParticipantsChangeData)
+  const [buttonLabel, buttonIcon, buttonColor, showEditButton] = useButtonState(userWantsToChangeData, readySubmission, fetcher.state, allowParticipantsChangeData)
 
   return (
     <Form method="post" className='section-wrapper padding'>
       <h2 className='admin-section-title' ref={buttonRef}>
         Dados da Inscrição
 
-        <Button
+        { showEditButton && (<Button
           onPress={handleSubmission}
           className={`secondary-button-box ${buttonColor ? buttonColor + "-light" : ""}`}
         >
           {buttonIcon} {buttonLabel}
-        </Button>
+        </Button>)}
       </h2>
 
       {!allowParticipantsChangeData && <i className='payments-warning'>
@@ -128,7 +128,7 @@ const Profile = () => {
         actionType="edit"
       />
 
-      <AnimatePresence>
+      show<AnimatePresence>
         {!isRefVisible &&
           <motion.div
             className='sticky-button'

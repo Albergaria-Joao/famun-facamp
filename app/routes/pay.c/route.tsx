@@ -35,7 +35,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     }
     return sum;
   }, 0) as number;
-
+  console.log(price);
   // create the payment intent
   let paymentIntent
   try {

@@ -1,13 +1,17 @@
 import React from "react"
 import { FiCheck, FiEdit, FiX } from "react-icons/fi/index.js"
 import Spinner from "~/components/spinner"
+import { isSystemOpen } from "~/utils/deadlines"
 
 export function useButtonState(userWantsToChangeData: boolean, readySubmission: boolean, transition: "idle" | "loading" | "submitting", allow: boolean) {
   const [buttonLabel, setButtonLabel] = React.useState<string>("Editar Dados")
   const [buttonIcon, setButtonIcon] = React.useState<React.ReactNode>(<FiEdit className="icon" />)
   const [buttonColor, setButtonColor] = React.useState<string>("blue")
-
+  const showEditButton = isSystemOpen(); 
+  
   React.useEffect(() => {
+    if (!showEditButton) return;
+
     setButtonLabel(transition !== 'idle' ?
       "Salvando" :
       !userWantsToChangeData ?
@@ -26,7 +30,7 @@ export function useButtonState(userWantsToChangeData: boolean, readySubmission: 
       userWantsToChangeData ?
         readySubmission ? 'green' : 'red' :
         'blue')
-  }, [userWantsToChangeData, readySubmission, transition])
+  }, [userWantsToChangeData, readySubmission, showEditButton, transition])
 
-  return [buttonLabel, buttonIcon, buttonColor]
+  return [buttonLabel, buttonIcon, buttonColor, showEditButton]
 }

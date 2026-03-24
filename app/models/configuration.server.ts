@@ -113,6 +113,6 @@ export async function checkCuponCode(code: string, type: ParticipationMethod) {
   })
 
   if (configuration === null) return false
-
+  
   return configuration.coupons.some(coupon => coupon.code === code && coupon.type === type);
 }
