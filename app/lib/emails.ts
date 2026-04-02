@@ -4,9 +4,8 @@ const year = new Date().getFullYear()
 export const createUserEmail = (user: UserType) => {
   return `
     <p>Prezado(a) ${user.name}</p>
-    <p>Seja bem-vindo(a) ao FAMUN ${year}!</p>
 
-    <p>Seu cadastro no sistema de inscrições foi realizado com sucesso!</p>
+    <p>Seu cadastro no sistema de inscrições do FAMUN ${year} foi realizado com sucesso!</p>
 
     <p>Para que sua INSCRIÇÃO na conferência seja concluída, você deve completar os seguintes passos:</p>
 
@@ -43,8 +42,6 @@ export const manualCreateUserEmail = (creatorName: string, delegationSchool: str
   return `
     <p>Prezado(a) ${user.name}</p>
     <p>Seja bem-vindo(a) ao FAMUN ${year}!</p>
-    
-    <p>A sua inscrição para a FAMUN ${year} foi registrada com sucesso!</p>
 
     <p>Sua conta foi criada pelo(a) ${creatorName} e você está participando junto com o(a) ${delegationSchool}. </p>
 
@@ -73,7 +70,7 @@ export const createDelegationEmail = (delegation: DelegationType, user: UserType
     <p>Nome: ${delegation.school} <br/>
     Data de Criação: ${delegation.createdAt?.toLocaleDateString("pt-BR")} </p>
 
-    <p>Como chefe de delegação, você deve convidar outros participantes para entrar em sua delegação. Para facilitar este processo, fornecemos duas opções: </p>
+    <p>Como chefe de delegação/Faculty Advisor, você deve convidar outros participantes para entrar em sua delegação. Para facilitar este processo, fornecemos duas opções: </p>
 
     <p>Convite dos Participantes <br/> 
     Utilize o link a seguir para convidar participantes: <br/> ${delegation.inviteLink} </p>
