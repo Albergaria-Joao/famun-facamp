@@ -99,7 +99,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       address: endereco.address, // Endereço obrigatório
       addressNumber: enderecoNum,
       //complement: "Sala 1",
-      province: "Centro", // Bairro obrigatório
+      province: "-", // Bairro obrigatório
       postalCode: endereco.postalCode, // CEP obrigatório
     });
     console.log(checkoutUrl);
