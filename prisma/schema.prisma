@@ -39,7 +39,12 @@ model User {
   stripePaidId        String?
   stripePaid          Paid?
   stripePaymentsId    String[]
-  // 
+  // asaas
+  asaasCustomerId     String?
+  asaasPaymentId      String? // ID da transação que deu certo
+  asaasPaid           Paid?
+  asaasPaymentsId     String[] // Guarda as cobranças que já foram geradas
+  //
   confirmationCode    ConfirmationCode?
   changesMade         Notifications[]
   notifications       Notifications[]     @relation("user_change")

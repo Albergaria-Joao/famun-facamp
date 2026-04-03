@@ -19,3 +19,7 @@ Teste com o leitor. Funcionou (?????????)
 
 Refatoração do api.admin.credentials.pdf
     Usa PDFKit para renderizar todas as páginas, no formato do PIMACO 6180, em muito menos tempo
+
+
+
+    mongoexport --uri="mongodb+srv://joaoalbergariafacamp:ZHkoe2hQdhCma1dq@jvab-cluster.o6tdnip.mongodb.net/famun_teste"
