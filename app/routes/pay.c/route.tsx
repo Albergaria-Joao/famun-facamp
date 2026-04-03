@@ -13,6 +13,7 @@ import PaymentForm from "./components/paymentForm";
 import { checkCuponCode } from "~/models/configuration.server";
 
 import { createAsaasCheckoutUrl } from "~/asaas.server";
+import { prisma } from "~/db.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -69,6 +70,25 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   // ASAAS
   let checkoutUrl: string;
 
+  const endereco = await prisma.address.findUnique({
+    where: {
+      delegationId: delegationId
+    },
+    select: {
+      address: true,
+      postalCode: true
+    }
+  })
+
+  if (!endereco) {
+    throw new Error("Endereço da delegação não encontrado. Impossível rotear pagamento.");
+  }
+
+  // Pega número
+  let enderecoNum = parseInt(endereco.address.match(/\d+/)?.[0] || "0"); // encontra a primeira sequência numérica no endereço e pega como número 
+  if (isNaN(enderecoNum) || endereco.address.toLowerCase().includes("s/n") || endereco.address.toLowerCase().includes("sn") ) { // Se for end. s/ número
+    enderecoNum = 0; // ou algum valor padrão
+  }
   try {
     checkoutUrl = await createAsaasCheckoutUrl(quantity, price, {
       userId: user.id,
@@ -76,12 +96,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       name: user.name,
       cpfCnpj: user.cpf,
       mobilePhone: user.phoneNumber, 
-      //address: "aaaaaaa", // Ainda não fui atrás pra ver como pegar o endereço
-      address: "Av. Paulista", // Endereço obrigatório
-      addressNumber: "150",
-      complement: "Sala 1",
+      address: endereco.address, // Endereço obrigatório
+      addressNumber: enderecoNum,
+      //complement: "Sala 1",
       province: "Centro", // Bairro obrigatório
-      postalCode: "01310-100", // CEP obrigatório
+      postalCode: endereco.postalCode, // CEP obrigatório
     });
     console.log(checkoutUrl);
     // name: nomeDoCliente,

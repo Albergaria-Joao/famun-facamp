@@ -18,6 +18,7 @@ export async function createAsaasCheckoutUrl(quantity: number, price: number, cD
         callback: {
             successUrl: "https://google.com?status=sucesso", // Fazer urls de sucesso e fracasso
             cancelUrl: "https://google.com?status=cancelado",
+            //cancelUrl: `${process.env.WEBSITE_URL}/pay/s`,
             autoRedirect: true
         },
 

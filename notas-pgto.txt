@@ -21,3 +21,5 @@ As coisas do Stripe são pegas a partir de dependências no package.json
 Mudei no app/routes/pay.c
 
 Criei um app/asaas.server.ts p/ rodar a criação de URL do checkout em segundo plano (basicamente copiei do teste que o Pedro fez)
+
+Modo de pegar endereço da delegação encontrado em app\routes\dashboard\components\editUserData\delegation\address.tsx
