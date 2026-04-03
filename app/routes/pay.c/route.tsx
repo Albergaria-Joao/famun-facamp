@@ -90,18 +90,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     enderecoNum = 0; // ou algum valor padrão
   }
   try {
-    checkoutUrl = await createAsaasCheckoutUrl(quantity, price, {
-      userId: user.id,
-      email: user.email,
-      name: user.name,
-      cpfCnpj: user.cpf,
-      mobilePhone: user.phoneNumber, 
-      address: endereco.address, // Endereço obrigatório
-      addressNumber: enderecoNum,
-      //complement: "Sala 1",
-      province: "-", // Bairro obrigatório
-      postalCode: endereco.postalCode, // CEP obrigatório
-    });
+    checkoutUrl = await createAsaasCheckoutUrl(quantity, price, user.id, delegationId);
     console.log(checkoutUrl);
     // name: nomeDoCliente,
     // cpfCnpj: "218.002.330-86", // CPF válido gerado para teste
